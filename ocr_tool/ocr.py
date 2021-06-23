@@ -7,9 +7,10 @@ import keras_ocr
 from spellchecker import SpellChecker
 import sys
 import os
+import pathlib
 
-def draw_line_boxes(image_name, show=False):
-  cv_img = cv2.imread(image_name, cv2.IMREAD_UNCHANGED)
+def draw_line_boxes(image_path, show=False):
+  cv_img = cv2.imread(image_path, cv2.IMREAD_UNCHANGED)
   pil_img = Image.fromarray(cv2.cvtColor(cv_img,cv2.COLOR_BGR2RGB))
 
   api = tr.PyTessBaseAPI()
@@ -31,8 +32,8 @@ def draw_line_boxes(image_name, show=False):
 
   return boxes
 
-def crop_lines_from_image(image_name, line_boxes, threshold=.05):
-  img = Image.open(image_name)
+def crop_lines_from_image(image_path, line_boxes, threshold=.05):
+  img = Image.open(image_path)
   img = img.convert('RGB')
 
   for box_no, (_,box,_,_) in enumerate(line_boxes):
@@ -76,13 +77,18 @@ def get_image_text(prediction_groups):
     all_words.append(' '.join(words))
   return '\n'.join(all_words)
 
-def main(image_name):
-  line_boxes = draw_line_boxes(image_name)
-  crop_lines_from_image(image_name, line_boxes)
-  prediction_groups = predict_words(len(line_boxes))
-  text = get_image_text(prediction_groups)
-  print(text)
-  os.system('rm line_box*')
+class OCR():
+    def __init__(self, image_path):
+        self.image_path = image_path
+        print(self.image_path)
 
-if __name__ == '__main__':
-  main(sys.argv[1])
+    def extract(self):
+        line_boxes = draw_line_boxes(self.image_path)
+        crop_lines_from_image(self.image_path, line_boxes)
+        prediction_groups = predict_words(len(line_boxes))
+        text = get_image_text(prediction_groups)
+        self.clear_workspace()
+        return text;
+
+    def clear_workspace(self):
+        os.system('rm line_box*')
