@@ -1,4 +1,3 @@
-from google.colab.patches import cv2_imshow
 import cv2
 import numpy as np
 import tesserocr as tr
@@ -6,6 +5,8 @@ from PIL import Image
 import matplotlib.pyplot as plt
 import keras_ocr
 from spellchecker import SpellChecker
+import sys
+import os
 
 def draw_line_boxes(image_name, show=False):
   cv_img = cv2.imread(image_name, cv2.IMREAD_UNCHANGED)
@@ -24,7 +25,7 @@ def draw_line_boxes(image_name, show=False):
     api.End()
 
   if show:
-    cv2_imshow(cv_img)
+    cv2.imshow(cv_img)
     cv2.waitKey(0)
     cv2.destroyAllWindows()
 
@@ -75,13 +76,13 @@ def get_image_text(prediction_groups):
     all_words.append(' '.join(words))
   return '\n'.join(all_words)
 
-def main():
-  image_name = 'Capture.png'
+def main(image_name):
   line_boxes = draw_line_boxes(image_name)
   crop_lines_from_image(image_name, line_boxes)
   prediction_groups = predict_words(len(line_boxes))
   text = get_image_text(prediction_groups)
   print(text)
+  os.system('rm line_box*')
 
 if __name__ == '__main__':
-  main()
+  main(sys.argv[1])
