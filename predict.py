@@ -1,12 +1,29 @@
+import os
+from PIL import Image
+import sys
+import cv2
+import matplotlib.pyplot as plt
+
+# define helper functions
+def imShow(path):
+  image = cv2.imread(path)
+  height, width = image.shape[:2]
+  resized_image = cv2.resize(image,(3*width, 3*height), interpolation = cv2.INTER_CUBIC)
+
+  fig = plt.gcf()
+  fig.set_size_inches(18, 10)
+  plt.axis("off")
+  plt.imshow(cv2.cvtColor(resized_image, cv2.COLOR_BGR2RGB))
+  plt.show()
+
 def predict(image_name):
-  !./darknet detector test build/darknet/x64/data/obj.data cfg/yolo-obj.cfg backup/yolo-obj_last.weights image_name -dont_show
-  imShow('predictions.jpg')
+  os.system('cd darknet; ./darknet detector test build/darknet/x64/data/obj.data cfg/yolo-obj.cfg backup/yolo-obj_final.weights ' + image_name + ' -dont_show')
 
 def get_logo_boxes(image_name):
   boxes = []
   image_raw = image_name.split(".")[0]
 
-  with open(image_raw + ".txt", 'r') as f:
+  with open('darknet/' + image_raw + ".txt", 'r') as f:
     rects = f.readlines()
     for line in rects:
       line = line[:-1]
@@ -33,15 +50,20 @@ def get_logo_boxes(image_name):
     return boxes
 
 def crop_logos(image_name, boxes):
-  img = Image.open(image_name)
+  img = Image.open('darknet/' + image_name)
+  image_raw = image_name.split(".")[0]
 
   for box_no, box in enumerate(boxes):
     cropped_img = img.crop(box)
-    cropped_img.save(image_raw + 'box{}.jpg'.format(box_no + 1))
+    cropped_img = cropped_img.convert('RGB')
+    cropped_img.save(image_raw + '_box_{}.jpg'.format(box_no + 1))
     print('logo saved at', image_raw + '_box_{}.jpg'.format(box_no + 1))
 
-def main():
-  image_name = 'cvp.jpg'
+def main(image_name):
+  print(image_name)
   predict(image_name)
   boxes = get_logo_boxes(image_name)
   crop_logos(image_name, boxes)
+
+if __name__ == '__main__':
+  main(sys.argv[1])
