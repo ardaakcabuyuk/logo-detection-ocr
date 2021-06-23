@@ -1,7 +1,4 @@
 from fastapi import FastAPI, File, UploadFile
-from fastapi.responses import FileResponse
-import os
-from random import randint
 import uuid
 
 app = FastAPI()
@@ -12,9 +9,6 @@ async def root():
     return {"message": "Hello World"}
 
 IMAGEDIR = "fastapi-images/"
-
-app = FastAPI()
-
 
 @app.post("/images/")
 async def create_upload_file(file: UploadFile = File(...)):
