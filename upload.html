@@ -219,12 +219,14 @@
     $(document).ready(function() {
       const lockModal = $("#lock-modal");
       const loadingCircle = $("#loading-circle");
+      const processing = $('#processing')
       const form = $("#form");
 
       form.on('submit', function(e) {
         // lock down the form
         lockModal.css("display", "block");
         loadingCircle.css("display", "block");
+        processing.css("display", "block");
       });
     });
   </script>
