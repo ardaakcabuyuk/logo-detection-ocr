@@ -57,6 +57,43 @@ def predict_words(line_box_count, plot=False):
 
   return prediction_groups
 
+def get_key_text(prediction_groups):
+  sorted_groups = []
+  all_words = []
+  spell = SpellChecker()
+
+  for group in prediction_groups:
+    group.sort(key=lambda group: group[1][0][0])
+    sorted_groups.append(group)
+    words = []
+    for word, _ in group:
+      misspelled = spell.unknown([word])
+
+      for mis in misspelled:
+          word = spell.correction(mis)
+
+      words.append(word)
+    all_words.append(','.join(words))
+  return ','.join(all_words)
+
+def predict_key_words(image_path ,plot=False):
+  pipeline = keras_ocr.pipeline.Pipeline()
+
+  images = [
+      keras_ocr.tools.read(url) for url in [
+          image_path
+      ]
+  ]
+
+  prediction_groups = pipeline.recognize(images)
+
+  if plot:
+    fig, axs = plt.subplots(nrows=len(images), figsize=(20, 20))
+    for ax, image, predictions in zip(axs, images, prediction_groups):
+        keras_ocr.tools.drawAnnotations(image=image, predictions=predictions, ax=ax)
+
+  return prediction_groups
+
 #todo save in txt?
 def get_image_text(prediction_groups):
   sorted_groups = []
@@ -87,7 +124,12 @@ class OCR():
         prediction_groups = predict_words(len(line_boxes))
         text = get_image_text(prediction_groups)
         self.clear_workspace()
-        return text;
+        return text
 
     def clear_workspace(self):
         os.system('rm line_box*')
+
+    def extract_key_words(self):
+        prediction_groups = predict_key_words(self.image_path)
+        text = get_key_text(prediction_groups)
+        return text
