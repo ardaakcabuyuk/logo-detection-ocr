@@ -80,7 +80,6 @@ def get_image_text(prediction_groups):
 class OCR():
     def __init__(self, image_path):
         self.image_path = image_path
-        print(self.image_path)
 
     def extract(self):
         line_boxes = draw_line_boxes(self.image_path)

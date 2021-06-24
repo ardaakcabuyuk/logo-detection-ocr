@@ -1,5 +1,4 @@
-from ocr_tool.ocr import OCR
+from logo_detection_tool.predict import Detector, Recognizer
 
-ocr = OCR('images/Capture.png')
-text = ocr.extract()
-print(text)
+detector = Recognizer('Capture.png')
+detector.recognize()
