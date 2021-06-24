@@ -1,4 +1,6 @@
 from logo_detection_tool.predict import Detector, Recognizer
+from ocr_tool.ocr import OCR
 
-detector = Recognizer('Capture.png')
-detector.recognize()
+ocr = OCR('logos/Capture.png')
+text = ocr.extract()
+print('gaypal?: ', text)

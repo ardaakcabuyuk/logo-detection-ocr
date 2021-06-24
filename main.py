@@ -72,10 +72,9 @@ async def logo_detect(file: UploadFile = File(...)):
         else:
             break
 
-    print('paths: ', logo_paths)
     return zipfiles(logo_paths)
 
-@app.post("/logo_text/")
+@app.post("/logo_name/")
 async def logo_recognize(file: UploadFile = File(...)):
     file.filename = f"{uuid.uuid4()}.jpg"
 
@@ -86,7 +85,9 @@ async def logo_recognize(file: UploadFile = File(...)):
     with open(path, "wb") as f:
         f.write(contents)
 
-    return {"filename": file.filename}
+    recognizer = Recognizer(str(file.filename))
+    logo_names = recognizer.recognize()
+    return {"logo_names": logo_names}
 
 @app.post("/ocr/")
 async def ocr(file: UploadFile = File(...)):

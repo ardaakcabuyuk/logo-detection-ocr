@@ -81,14 +81,17 @@ class Recognizer():
     def recognize(self):
         image_raw = self.image_name.split(".")[0]
         logo_count = 0
-        logo_names = open(str(pathlib.Path().absolute()) + '/logos/' + image_raw + '_logos.txt', 'w+')
+        logo_names = []
+        detector = Detector(self.image_name)
+        detector.detect()
         while True:
             try:
                 logo = str(pathlib.Path().absolute()) + '/logos/' + image_raw + '_logo_{}.jpg'.format(logo_count + 1)
                 ocr = OCR(logo)
                 logo_name = ocr.extract()
-                print('logo: ' + logo_name)
-                logo_names.write(logo_name + '\n')
+                logo_names.append(logo_name)
                 logo_count += 1
             except:
                 break
+
+        return logo_names
