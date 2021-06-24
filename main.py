@@ -75,7 +75,7 @@ async def logo_detect(file: UploadFile = File(...)):
     return zipfiles(logo_paths)
 
 @app.post("/logo_name/")
-async def logo_recognize(file: UploadFile = File(...)):
+async def logo_recognize_name(file: UploadFile = File(...)):
     file.filename = f"{uuid.uuid4()}.jpg"
 
     contents = await file.read()  # <-- Important!
@@ -89,6 +89,21 @@ async def logo_recognize(file: UploadFile = File(...)):
     logo_names = recognizer.recognize()
     return {"logo_names": logo_names}
 
+@app.post("/keywords/")
+async def recognize_keywords(file: UploadFile = File(...)):
+    file.filename = f"{uuid.uuid4()}.jpg"
+
+    contents = await file.read()  # <-- Important!
+    path = f"{IMAGEDIR}{file.filename}"
+
+    # example of how you can save the file
+    with open(path, "wb") as f:
+        f.write(contents)
+
+    ocr = OCR(path)
+    keywords = ocr.extract_key_words()
+    return {"logo_keywords": keywords}
+
 @app.post("/ocr/")
 async def ocr(file: UploadFile = File(...)):
 
@@ -100,7 +115,6 @@ async def ocr(file: UploadFile = File(...)):
     with open(path, "wb") as f:
         f.write(contents)
 
-    print(path)
     ocr = OCR(path)
     text = ocr.extract()
     return {"response": text}

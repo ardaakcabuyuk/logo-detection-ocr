@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html>
 <head>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script src="scripts.js"></script>
   <style>
     * {
         box-sizing: border-box;
@@ -87,15 +89,15 @@
         margin-left: auto;
         margin-right: auto;
         margin-top: 75px;
-        width: 50%;
+        width: 30%;
       }
       .box__button {
         font-weight: 600;
-        font-size: 18px;
+        font-size: 16px;
         color: #FFF;
         background: #F49A24;
         border-radius: 6px;
-        width: 40%;
+        width: 30%;
         display: block;
         padding: 14px;
         text-decoration: none;
@@ -112,21 +114,63 @@
         display: inline-block;
         background: #2a3344;
         display: block;
-        width: 40%;
+        width: 90%;
         margin: auto;
         padding: 14px;
         border-radius: 6px;
         color: #FFF;
         cursor: pointer;
       }
+
+      #lock-modal {
+        display: none;
+        background-color: black;
+        opacity: 0.6;
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        border-radius: inherit;
+      }
+
+      .box {
+        position: relative;
+      }
+
+      #loading-circle {
+        display: none;
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        margin: auto;
+        margin-top: 200px;
+        width: 40px;
+        height: 40px;
+        border: 4px solid #f3f3f3;
+        border-top: 4px solid #3498db;
+        border-radius: 50%;
+        animation: spin 0.6s ease-in infinite;
+      }
+
+      @keyframes spin {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
     </style>
     <script>
       $("#file-upload").css("opacity", "0");
 
-    $("#file-browser").click(function(e) {
-      e.preventDefault();
-      $("#file-upload").trigger("click");
-    });
+      $("#file-browser").click(function(e) {
+        e.preventDefault();
+        $("#file-upload").trigger("click");
+      });
     </script>
 </head>
 <body>
@@ -140,12 +184,15 @@
             <i class="fas fa-file-alt" data-fa-transform="shrink-2 up-4"></i>
             <i class="fas fa-file-pdf" data-fa-transform="shrink-3 down-2 right-6 rotate-45"></i>
           </div>
-          <form class="box" method="post" action="http://127.0.0.1:8000/logo_name" enctype="multipart/form-data">
+          <form class="box" method="post" enctype="multipart/form-data" id="form">
             <div class="box__input">
               <label class="custom-file-upload">
-                  <input type="file" id="file" name="file">
+                  Upload Image<br><span id="file-chosen" style="font-size: 12px;">No file chosen</span>
+                  <input type="file" id="actual-btn" name="file" hidden/>
               </label>
-              <button class="box__button" type="submit">Upload</button>
+              <button class="box__button" type="submit" style="display:inline;" formaction="http://127.0.0.1:8000/ocr">OCR</button>
+              <button class="box__button" type="submit" style="display:inline;" formaction="http://127.0.0.1:8000/logo_image">Logo Images</button>
+              <button class="box__button" type="submit" style="display:inline;" formaction="http://127.0.0.1:8000/keywords">Keywords</button>
             </div>
             <div class="box__uploading">Uploading…</div>
             <div class="box__success">Done!</div>
@@ -156,5 +203,30 @@
     </div>
   </div>
   <img class="logo" src="jotform.png"></img>
+  <div id="lock-modal"></div>
+  <div id="loading-circle"></div>
+  <script>
+    const actualBtn = document.getElementById('actual-btn');
+
+    const fileChosen = document.getElementById('file-chosen');
+    console.log(actualBtn)
+
+    actualBtn.addEventListener('change', function(){
+      fileChosen.textContent = this.files[0].name
+    })
+  </script>
+  <script>
+    $(document).ready(function() {
+      const lockModal = $("#lock-modal");
+      const loadingCircle = $("#loading-circle");
+      const form = $("#form");
+
+      form.on('submit', function(e) {
+        // lock down the form
+        lockModal.css("display", "block");
+        loadingCircle.css("display", "block");
+      });
+    });
+  </script>
 </body>
 </html>
