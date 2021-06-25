@@ -7,7 +7,7 @@ import sys
 sys.path.append("..")
 from ocr_tool.ocr import OCR
 
-
+abs_path = str(pathlib.Path().absolute())
 # define helper functions
 def imShow(path):
   image = cv2.imread(path)
@@ -21,13 +21,13 @@ def imShow(path):
   plt.show()
 
 def predict_image(image_name):
-  os.system('cd darknet; ./darknet detector test build/darknet/x64/data/obj.data cfg/yolo-obj.cfg backup/yolo-obj_final.weights ' + str(pathlib.Path().absolute()) + '/images/' + image_name + ' -dont_show')
+  os.system('cd darknet; ./darknet detector test build/darknet/x64/data/obj.data cfg/yolo-obj.cfg backup/yolo-obj_final.weights ' + abs_path + '/images/' + image_name + ' -dont_show')
 
 def get_logo_boxes(image_name):
   boxes = []
   image_raw = image_name.split(".")[0]
 
-  with open(str(pathlib.Path().absolute()) + '/images/' + image_raw + ".txt", 'r') as f:
+  with open(abs_path + '/images/' + image_raw + ".txt", 'r') as f:
     rects = f.readlines()
     for line in rects:
       line = line[:-1]
@@ -50,19 +50,19 @@ def get_logo_boxes(image_name):
 
       box_tup = tuple(box_list)
       boxes.append(box_tup)
-    os.system('rm ' + str(pathlib.Path().absolute()) + '/images/*.txt')
+    os.system('rm ' + abs_path + '/images/*.txt')
     return boxes
 
 def crop_logos(image_name, boxes):
-  print(str(pathlib.Path().absolute()) + '/images/' + image_name)
-  img = Image.open(str(pathlib.Path().absolute()) + '/images/' + image_name)
+  print(abs_path + '/images/' + image_name)
+  img = Image.open(abs_path + '/images/' + image_name)
   image_raw = image_name.split(".")[0]
 
   for box_no, box in enumerate(boxes):
     cropped_img = img.crop(box)
     cropped_img = cropped_img.convert('RGB')
-    cropped_img.save(str(pathlib.Path().absolute()) + '/logos/' + image_raw + '_logo_{}.jpg'.format(box_no + 1))
-    print('logo saved at' + str(pathlib.Path().absolute()) + '/logos/' + image_raw + '_logo_{}.jpg'.format(box_no + 1))
+    cropped_img.save(abs_path + '/logos/' + image_raw + '_logo_{}.jpg'.format(box_no + 1))
+    print('logo saved at' + abs_path + '/logos/' + image_raw + '_logo_{}.jpg'.format(box_no + 1))
 
 class Detector():
     def __init__(self, image_name):
@@ -86,7 +86,7 @@ class Recognizer():
         detector.detect()
         while True:
             try:
-                logo = str(pathlib.Path().absolute()) + '/logos/' + image_raw + '_logo_{}.jpg'.format(logo_count + 1)
+                logo = abs_path + '/logos/' + image_raw + '_logo_{}.jpg'.format(logo_count + 1)
                 ocr = OCR(logo)
                 logo_name = ocr.extract()
                 logo_names.append(logo_name)
