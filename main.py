@@ -343,7 +343,7 @@ async def recognize_keywords_visual(file: UploadFile = File(...)):
     <body>
       <div class="wrapper">
         <div class="container limit">
-          <h1>OCR Result</h1>
+          <h1>Keywords</h1>
           <p style="margin-bottom: 20px;">''' + text + '''</p>
         </div>
       </div>
