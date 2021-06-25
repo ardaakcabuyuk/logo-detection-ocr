@@ -14,6 +14,8 @@ import pathlib
 
 app = FastAPI()
 db = []
+app.mount("/logos", StaticFiles(directory="logos"), name="logos")
+app.mount("/images", StaticFiles(directory="images"), name="images")
 
 @app.get("/")
 async def root():
@@ -22,7 +24,7 @@ async def root():
 IMAGEDIR = "images/"
 
 def zipfiles(filenames):
-    zip_filename = "archive.zip"
+    zip_filename = "logos.zip"
 
     s = BytesIO()
     zf = zipfile.ZipFile(s, "w")
@@ -45,7 +47,7 @@ def zipfiles(filenames):
 
     return resp
 
-@app.post("/logo_image/")
+@app.post("/")
 async def logo_detect(file: UploadFile = File(...)):
 
     file.filename = f"{uuid.uuid4()}.jpg"
@@ -71,7 +73,80 @@ async def logo_detect(file: UploadFile = File(...)):
         else:
             break
 
-    return zipfiles(logo_paths)
+    return display_visual(logo_paths, file.filename)
+    #return zipfiles(logo_paths)
+
+def display_visual(logo_paths, original):
+    html_content = \
+    '''
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <style>
+        * {
+            box-sizing: border-box;
+            -moz-box-sizing: border-box;
+            -webkit-box-sizing: border-box;
+          }
+
+          body {
+            font-family: 'Montserrat', sans-serif;
+            background: #2a3344;
+          }
+
+          .wrapper {
+            margin: auto;
+            max-width: 1000px;
+            padding-top: 60px;
+            text-align: center;
+          }
+
+          .container {
+            background-color: #f9f9f9;
+            padding: 20px;
+            border-radius: 10px;
+            /*border: 0.5px solid rgba(130, 130, 130, 0.25);*/
+            /*box-shadow: 0 2px 3px rgba(0, 0, 0, 0.1),
+                        0 0 0 1px rgba(0, 0, 0, 0.1);*/
+          }
+
+          h1 {
+            color: #130f40;
+            font-family: 'Varela Round', sans-serif;
+            letter-spacing: -.5px;
+            font-weight: 700;
+            padding-bottom: 10px;
+          }
+
+          .logo {
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+            margin-top: 75px;
+            width: 30%;
+          }
+      </style>
+    </head>
+    <body>
+      <div class="wrapper">
+        <div class="container">
+          <h1>Logo Detection Result</h1>
+          <h2>Original Image</h2>
+          <img src="images/''' + original + '">'
+
+    html_content += '<h2>Cropped Logos</h2>'
+    for path in logo_paths:
+        html_content += '<img src="logos/' + os.path.split(path)[1] + '">';
+    html_content += \
+    '''
+        <br>
+        </div>
+      </div>
+      <img class="logo" src="https://www.jotform.com/tr/resources/assets/logo/jotform-logo-transparent-800x200.png">
+    </body>
+    </html>
+    '''
+    return HTMLResponse(content = html_content, status_code=200, media_type='text/html')
 
 @app.post("/logo_name/")
 async def logo_recognize_name(file: UploadFile = File(...)):
@@ -260,7 +335,7 @@ async def recognize_keywords_visual(file: UploadFile = File(...)):
             width: 30%;
           }
           .limit{
-            width:50px;
+            width:1000px;
             word-wrap: break-word;
             }
       </style>
