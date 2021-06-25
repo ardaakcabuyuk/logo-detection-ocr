@@ -209,7 +209,8 @@ async def recognize_keywords_visual(file: UploadFile = File(...)):
 
     ocr = OCR(path)
     text = ocr.extract_key_words()
-
+    delim = len(text) // 10
+    str = ""
     html_content = \
     '''
     <!DOCTYPE html>
@@ -258,13 +259,17 @@ async def recognize_keywords_visual(file: UploadFile = File(...)):
             margin-top: 75px;
             width: 30%;
           }
+          .limit{
+            width:50px;
+            word-wrap: break-word;
+            }       
       </style>
     </head>
     <body>
       <div class="wrapper">
-        <div class="container">
+        <div class="container limit">
           <h1>OCR Result</h1>
-          <p style="margin-bottom: 20px;">''' + text + '''</p>
+          <p style="margin-bottom: 20px;">''' + text + '''</p>
         </div>
       </div>
       <img class="logo" src="https://www.jotform.com/tr/resources/assets/logo/jotform-logo-transparent-800x200.png">
