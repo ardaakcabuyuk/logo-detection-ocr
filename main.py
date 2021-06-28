@@ -132,7 +132,7 @@ def display_visual(logo_paths, original):
         <div class="container">
           <h1>Logo Detection Result</h1>
           <h2>Original Image</h2>
-          <img src="images/''' + original + '">'
+          <img src="images/''' + original + '" style="max-width: 800px;">'
 
     html_content += '<h2>Cropped Logos</h2>'
     for path in logo_paths:
