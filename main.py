@@ -136,7 +136,7 @@ def display_visual(logo_paths, original):
 
     html_content += '<h2>Cropped Logos</h2>'
     for path in logo_paths:
-        html_content += '<img src="logos/' + os.path.split(path)[1] + '">';
+        html_content += '<img src="logos/' + os.path.split(path)[1] + '" style="max-width: 800px;">';
     html_content += \
     '''
         <br>
