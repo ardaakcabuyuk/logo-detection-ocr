@@ -1,6 +1,0 @@
-!git clone https://github.com/faustomorales/keras-ocr.git
-!apt-get install tesseract-ocr libtesseract-dev libleptonica-dev pkg-config
-!pip install tesserocr
-!pip install keras-ocr
-!pip install pyspellchecker
-
